@@ -15,11 +15,11 @@ page 50127 "S1P-Warehouse Lines"
             {
                 field(Document; Document)
                 {
-
+                    Editable = false;
                 }
                 field(SKU; SKU)
                 {
-
+                    Editable = false;
                 }
                 field(Quantity; Rec.Quantity)
                 {
@@ -31,7 +31,7 @@ page 50127 "S1P-Warehouse Lines"
                 }
                 field("Current State"; CurrentState)
                 {
-
+                    Editable = false;
                 }
                 field("Next State"; NextState)
                 {
@@ -75,9 +75,19 @@ page 50127 "S1P-Warehouse Lines"
     trigger OnAfterGetRecord()
     var
         DocumentNo: Code[20];
+        SKUDescBuilder: TextBuilder;
     begin
-
         Document := StrSubstNo('%1 %2', Rec."Warehouse Document Type", '<Number>');
-        SKU := StrSubstNo('%1 (%2) at %3', Rec."Item No.", Rec."Variant Code", Rec."Location Code");
+        SKUDescBuilder.Append('Item ');
+        SKUDescBuilder.Append(Rec."Item No.");
+        if Rec."Variant Code" <> '' then begin
+            SKUDescBuilder.Append(', Variant ');
+            SKUDescBuilder.Append(Rec."Variant Code");
+        end;
+        if Rec."Location Code" <> '' then begin
+            SKUDescBuilder.Append(' at location ');
+            SKUDescBuilder.Append(Rec."Location Code");
+        end;
+        SKU := SKUDescBuilder.ToText();
     end;
 }

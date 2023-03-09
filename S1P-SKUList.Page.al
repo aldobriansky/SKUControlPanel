@@ -13,6 +13,10 @@ page 50125 "S1P-SKU List"
         {
             repeater(StockkeepingUnits)
             {
+                field("SKU Exists"; Rec."SKU Exists")
+                {
+                    Editable = false;
+                }
                 field("Item No."; Rec."Item No.")
                 {
                     trigger OnValidate()
@@ -71,24 +75,25 @@ page 50125 "S1P-SKU List"
         {
             group(SKU)
             {
-                action("View SKU")
-                {
-                    Scope = Repeater;
-                    Image = SKU;
-
-                    trigger OnAction();
-                    begin
-
-                    end;
-                }
-                action("Select SKU")
+                action("Get existing SKUs")
                 {
                     Scope = Page;
                     Image = SKU;
 
                     trigger OnAction()
+                    var
+                        SKU: Record "Stockkeeping Unit";
                     begin
-
+                        if Rec."Item No." <> '' then
+                            SKU.SetRange("Item No.", Rec."Item No.");
+                        if Rec."Variant Code" <> '' then
+                            SKU.SetRange("Variant Code", Rec."Variant Code");
+                        if Rec."Location Code" <> '' then
+                            SKU.SetRange("Location Code", Rec."Location Code");
+                        if Page.RunModal(0, SKU) = Action::LookupOK then begin // rework to get selected SKUs, not all of them
+                            Rec.AddSKUs(SKU);
+                            CurrPage.Update(false);
+                        end;
                     end;
                 }
                 action("Create SKU")
@@ -98,20 +103,36 @@ page 50125 "S1P-SKU List"
                     Image = CreateSKU;
 
                     trigger OnAction()
+                    var
+                        Item: Record Item;
+                        SKU: Record "Stockkeeping Unit";
+                        SKUCount: Integer;
                     begin
+                        SKUCount := SKU.Count();
 
+                        if Rec."Item No." <> '' then
+                            Item.SetRange("No.", Rec."Item No.");
+                        if Rec."Variant Code" <> '' then
+                            Item.SetRange("Variant Filter", Rec."Variant Code");
+                        if Rec."Location Code" <> '' then
+                            Item.SetRange("Location Filter", Rec."Location Code");
+                        Report.RunModal(Report::"Create Stockkeeping Unit", true, false, Item);
+
+                        if SKU.Count() <= SKUCount then
+                            exit;
+
+                        if Rec."Item No." <> '' then
+                            SKU.SetRange("Item No.", Rec."Item No.");
+                        if Rec."Variant Code" <> '' then
+                            SKU.SetRange("Variant Code", Rec."Variant Code");
+                        if Rec."Location Code" <> '' then
+                            SKU.SetRange("Location Code", Rec."Location Code");
+                        if SKU.GetFilters() <> '' then begin
+                            Rec.AddSKUs(SKU);
+                            CurrPage.Update();
+                        end;
                     end;
                 }
-            }
-            action(GetDocuments)
-            {
-                Caption = 'Get Documents';
-                Image = GetSourceDoc;
-
-                trigger OnAction()
-                begin
-
-                end;
             }
         }
     }

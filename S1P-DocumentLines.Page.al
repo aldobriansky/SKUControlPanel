@@ -3,6 +3,7 @@ page 50126 "S1P-Document Lines"
     PageType = ListPart;
     ApplicationArea = All;
     SourceTable = "S1P-Document Line";
+    SourceTableTemporary = true;
     InsertAllowed = true;
     ModifyAllowed = true;
     DeleteAllowed = true;
@@ -13,13 +14,13 @@ page 50126 "S1P-Document Lines"
         {
             repeater(DocumentLines)
             {
-                field(Document; Document)
+                field(Document; DocumentText)
                 {
-
+                    Editable = false;
                 }
-                field(SKU; SKU)
+                field(SKU; SKUText)
                 {
-
+                    Editable = false;
                 }
                 field(Quantity; Rec.Quantity)
                 {
@@ -31,7 +32,7 @@ page 50126 "S1P-Document Lines"
                 }
                 field("Current State"; CurrentState)
                 {
-
+                    Editable = false;
                 }
                 field("Next State"; NextState)
                 {
@@ -67,17 +68,43 @@ page 50126 "S1P-Document Lines"
     }
 
     var
-        Document: Text[100];
-        SKU: Text[100];
+        Document: Record "S1P-Document" temporary;
+        DocumentLine: Record "S1P-Document Line" temporary;
+        DocumentText: Text[100];
+        SKUText: Text[100];
         CurrentState: Text[50];
         NextState: Text[50];
 
     trigger OnAfterGetRecord()
     var
         DocumentNo: Code[20];
+        SKUDescBuilder: TextBuilder;
     begin
+        DocumentText := StrSubstNo('%1 %2', Rec."Document Type", '<Number>');
+        SKUDescBuilder.Append('Item ');
+        SKUDescBuilder.Append(Rec."Item No.");
+        if Rec."Variant Code" <> '' then begin
+            SKUDescBuilder.Append(', Variant ');
+            SKUDescBuilder.Append(Rec."Variant Code");
+        end;
+        if Rec."Location Code" <> '' then begin
+            SKUDescBuilder.Append(' at location ');
+            SKUDescBuilder.Append(Rec."Location Code");
+        end;
+        SKUText := SKUDescBuilder.ToText();
+    end;
 
-        Document := StrSubstNo('%1 %2', Rec."Document Type", '<Number>');
-        SKU := StrSubstNo('%1 (%2) at %3', Rec."Item No.", Rec."Variant Code", Rec."Location Code");
+    procedure GetDocuments()
+    var
+        MySKU: Record "S1P-SKU";
+    begin
+        Document.DeleteAll();
+        DocumentLine.DeleteAll();
+
+        if MySKU.FindSet() then
+            repeat
+                MySKU.GetDocuments(Document, DocumentLine);
+            until MySKU.Next() = 0;
+        Rec.Copy(DocumentLine, true);
     end;
 }

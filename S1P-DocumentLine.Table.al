@@ -6,11 +6,11 @@ table 50121 "S1P-Document Line"
     {
         field(1; "Document Type"; Enum "Item Ledger Entry Type")
         {
-
+            Editable = false;
         }
         field(2; "Record ID"; RecordId)
         {
-
+            Editable = false;
         }
         field(11; "Item No."; Code[20])
         {
@@ -32,6 +32,7 @@ table 50121 "S1P-Document Line"
         {
             BlankNumbers = BlankZero;
             DecimalPlaces = 0 : 5;
+            Editable = false;
         }
         field(110; "Qty. to Handle"; Decimal)
         {

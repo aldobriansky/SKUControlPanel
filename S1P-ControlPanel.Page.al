@@ -4,14 +4,11 @@ page 50120 "S1P-Control Panel"
     DataCaptionExpression = 'My stockkeeping units';
     SourceTable = User;
     UsageCategory = ReportsAndAnalysis;
-    // SourceTableTemporary = true;
-    // PromotedActionCategories = 'Navigation';
     Caption = 'My SKU';
-    DeleteAllowed = true;
+    DeleteAllowed = false;
     ModifyAllowed = true;
-    InsertAllowed = true;
+    InsertAllowed = false;
     ApplicationArea = All;
-
     // AboutTitle = 'About SKU main page.';
     // AboutText = 'Follow and manage your SKU.';
 
@@ -25,12 +22,13 @@ page 50120 "S1P-Control Panel"
 
                 field("User Name"; Rec."User Name")
                 {
-
+                    Editable = false;
                 }
             }
             part(SKUList; "S1P-SKU List")
             {
                 ShowFilter = false;
+                UpdatePropagation = Both;
             }
             group(WhereUsed)
             {
@@ -39,11 +37,13 @@ page 50120 "S1P-Control Panel"
                 part(Documents; "S1P-Document Lines")
                 {
                     ShowFilter = false;
+                    UpdatePropagation = Both;
                     Caption = 'Documents';
                 }
                 part(WhseDocuments; "S1P-Warehouse Lines")
                 {
                     ShowFilter = false;
+                    UpdatePropagation = Both;
                     Caption = 'Warehouse';
                 }
             }
@@ -58,14 +58,29 @@ page 50120 "S1P-Control Panel"
             action(Refresh)
             {
 
+                Image = Refresh;
+
                 trigger OnAction()
                 begin
-
+                    UpdateParts();
                 end;
             }
+        }
+        area(Promoted)
+        {
+            actionref(Refresh_Promoted; Refresh) { }
         }
     }
 
     var
         myInt: Integer;
+
+    local procedure UpdateParts()
+    var
+        myInt: Integer;
+    begin
+        CurrPage.Documents.Page.GetDocuments();
+        // CurrPage.WhseDocuments.Page.GetWhseDocuments();
+        CurrPage.Update(false);
+    end;
 }
