@@ -153,6 +153,19 @@ table 50120 "S1P-SKU"
         end;
     end;
 
+    procedure CalculateValues(var CurrentSKU: Record "S1P-SKU")
+    var
+        MySKU: Record "S1P-SKU";
+    begin
+        MySKU.Copy(CurrentSKU);
+        if MySKU.FindSet() then
+            repeat
+                MySKU.CalculateValues();
+                MySKU.Modify();
+            until MySKU.Next() = 0;
+        if CurrentSKU.Find() then;
+    end;
+
     procedure GetDocuments(var Document: Record "S1P-Document" temporary; var DocumentLine: Record "S1P-Document Line" temporary)
     var
         Item: Record Item;
@@ -169,7 +182,7 @@ table 50120 "S1P-SKU"
             repeat
                 InitDocument(Document, DocumentLine, Document."Document Type"::Sale, SalesLine.RecordId, Rec);
                 DocumentLine.Quantity := SalesLine."Quantity (Base)";
-                DocumentLine."Qty. to Handle" := SalesLine."Outstanding Qty. (Base)";
+                DocumentLine."Qty. to Handle" := SalesLine."Qty. to Ship (Base)";
                 DocumentLine.Insert();
                 Document.Insert();
             until SalesLine.Next() = 0;
@@ -178,10 +191,90 @@ table 50120 "S1P-SKU"
             repeat
                 InitDocument(Document, DocumentLine, Document."Document Type"::Purchase, PurchaseLine.RecordId, Rec);
                 DocumentLine.Quantity := PurchaseLine."Quantity (Base)";
-                DocumentLine."Qty. to Handle" := PurchaseLine."Outstanding Qty. (Base)";
+                DocumentLine."Qty. to Handle" := PurchaseLine."Qty. to Receive (Base)";
                 DocumentLine.Insert();
                 Document.Insert();
             until SalesLine.Next() = 0;
+
+        if ProdOrderLine.FindLinesWithItemToPlan(Item, true) then
+            repeat
+                InitDocument(Document, DocumentLine, Document."Document Type"::Output, ProdOrderLine.RecordId, Rec);
+                DocumentLine.Quantity := ProdOrderLine."Quantity (Base)";
+                DocumentLine."Qty. to Handle" := ProdOrderLine."Remaining Qty. (Base)";
+                DocumentLine.Insert();
+                Document.Insert();
+            until ProdOrderLine.Next() = 0;
+
+        if ProdOrderComponent.FindLinesWithItemToPlan(Item, true) then
+            repeat
+                InitDocument(Document, DocumentLine, Document."Document Type"::Consumption, ProdOrderComponent.RecordId, Rec);
+                DocumentLine.Quantity := ProdOrderComponent."Quantity (Base)";
+                DocumentLine."Qty. to Handle" := ProdOrderComponent."Remaining Qty. (Base)";
+                DocumentLine.Insert();
+                Document.Insert();
+            until ProdOrderLine.Next() = 0;
+    end;
+
+    procedure GetWarehouseDocuments(var WhseDocument: Record "S1P-Whse. Document" temporary; var WhseDocumentLine: Record "S1P-Whse. Document Line" temporary)
+    var
+        Item: Record Item;
+        WhseReceiptLine: Record "Warehouse Receipt Line";
+        WhseShipmentLine: Record "Warehouse Shipment Line";
+        WhseActivityLine: Record "Warehouse Activity Line";
+        WhseDocumentType: Enum "S1P-Whse. Document Type";
+    begin
+        Item.Get(Rec."Item No.");
+        Item.SetRange("Variant Filter", Rec."Variant Code");
+        Item.SetRange("Location Filter", Rec."Location Code");
+
+        WhseReceiptLine.SetRange("Item No.", Rec."Item No.");
+        WhseReceiptLine.SetRange("Variant Code", Rec."Variant Code");
+        WhseReceiptLine.SetRange("Location Code", Rec."Location Code");
+        WhseReceiptLine.SetFilter("Qty. Outstanding (Base)", '<>0');
+        if WhseReceiptLine.FindSet() then
+            repeat
+                InitWarehouseDocument(WhseDocument, WhseDocumentLine, "S1P-Whse. Document Type"::Receipt, WhseReceiptLine.RecordId, Rec);
+                WhseDocumentLine.Quantity := WhseReceiptLine."Qty. (Base)";
+                WhseDocumentLine."Qty. to Handle" := WhseReceiptLine."Qty. to Receive (Base)";
+                WhseDocumentLine.Insert();
+                WhseDocument.Insert();
+            until WhseReceiptLine.Next() = 0;
+
+        WhseShipmentLine.SetRange("Item No.", Rec."Item No.");
+        WhseShipmentLine.SetRange("Variant Code", Rec."Variant Code");
+        WhseShipmentLine.SetRange("Location Code", Rec."Location Code");
+        WhseShipmentLine.SetFilter("Qty. Outstanding (Base)", '<>0');
+        if WhseShipmentLine.FindSet() then
+            repeat
+                InitWarehouseDocument(WhseDocument, WhseDocumentLine, "S1P-Whse. Document Type"::Shipment, WhseShipmentLine.RecordId, Rec);
+                WhseDocumentLine.Quantity := WhseShipmentLine."Qty. (Base)";
+                WhseDocumentLine."Qty. to Handle" := WhseShipmentLine."Qty. to Ship (Base)";
+                WhseDocumentLine.Insert();
+                WhseDocument.Insert();
+            until WhseShipmentLine.Next() = 0;
+
+        WhseActivityLine.SetRange("Item No.", Rec."Item No.");
+        WhseActivityLine.SetRange("Variant Code", Rec."Variant Code");
+        WhseActivityLine.SetRange("Location Code", Rec."Location Code");
+        WhseActivityLine.SetFilter("Qty. Outstanding (Base)", '<>0');
+        if WhseActivityLine.FindSet() then
+            repeat
+                case WhseActivityLine."Activity Type" of
+                    "Warehouse Activity Type"::"Invt. Put-away":
+                        WhseDocumentType := WhseDocumentType::"Inventory Put-away";
+                    "Warehouse Activity Type"::"Invt. Pick":
+                        WhseDocumentType := WhseDocumentType::"Inventory Pick";
+                    "Warehouse Activity Type"::"Put-away":
+                        WhseDocumentType := WhseDocumentType::"Warehouse Put-away";
+                    "Warehouse Activity Type"::Pick:
+                        WhseDocumentType := WhseDocumentType::"Warehouse Pick";
+                end;
+                InitWarehouseDocument(WhseDocument, WhseDocumentLine, WhseDocumentType, WhseActivityLine.RecordId, Rec);
+                WhseDocumentLine.Quantity := WhseActivityLine."Qty. (Base)";
+                WhseDocumentLine."Qty. to Handle" := WhseActivityLine."Qty. to Handle (Base)";
+                WhseDocumentLine.Insert();
+                WhseDocument.Insert();
+            until WhseActivityLine.Next() = 0;
     end;
 
     procedure AddSKUs(var SKU: Record "Stockkeeping Unit")
@@ -235,5 +328,18 @@ table 50120 "S1P-SKU"
         DocumentLine."Item No." := MySKU."Item No.";
         DocumentLine."Variant Code" := MySKU."Variant Code";
         DocumentLine."Location Code" := MySKU."Location Code";
+    end;
+
+    local procedure InitWarehouseDocument(var WhseDocument: Record "S1P-Whse. Document"; var WhseDocumentLine: Record "S1P-Whse. Document Line";
+                                          WhseDocumentType: Enum "S1P-Whse. Document Type"; RecId: RecordId; MySKU: Record "S1P-SKU")
+    begin
+        WhseDocument."Warehouse Document Type" := WhseDocumentType;
+        WhseDocument."Record ID" := RecId;
+
+        WhseDocumentLine."Warehouse Document Type" := WhseDocument."Warehouse Document Type";
+        WhseDocumentLine."Record ID" := WhseDocument."Record ID";
+        WhseDocumentLine."Item No." := MySKU."Item No.";
+        WhseDocumentLine."Variant Code" := MySKU."Variant Code";
+        WhseDocumentLine."Location Code" := MySKU."Location Code";
     end;
 }

@@ -40,7 +40,7 @@ page 50120 "S1P-Control Panel"
                     UpdatePropagation = Both;
                     Caption = 'Documents';
                 }
-                part(WhseDocuments; "S1P-Warehouse Lines")
+                part(WhseDocuments; "S1P-Whse. Document Lines")
                 {
                     ShowFilter = false;
                     UpdatePropagation = Both;
@@ -76,11 +76,10 @@ page 50120 "S1P-Control Panel"
         myInt: Integer;
 
     local procedure UpdateParts()
-    var
-        myInt: Integer;
     begin
+        CurrPage.SKUList.Page.RefreshValues();
         CurrPage.Documents.Page.GetDocuments();
-        // CurrPage.WhseDocuments.Page.GetWhseDocuments();
+        CurrPage.WhseDocuments.Page.GetWarehouseDocuments();
         CurrPage.Update(false);
     end;
 }

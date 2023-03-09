@@ -4,7 +4,7 @@ page 50126 "S1P-Document Lines"
     ApplicationArea = All;
     SourceTable = "S1P-Document Line";
     SourceTableTemporary = true;
-    InsertAllowed = true;
+    InsertAllowed = false;
     ModifyAllowed = true;
     DeleteAllowed = true;
 
@@ -46,16 +46,7 @@ page 50126 "S1P-Document Lines"
     {
         area(Processing)
         {
-            action("View Document")
-            {
-                Scope = Page;
-
-                trigger OnAction();
-                begin
-
-                end;
-            }
-            action("Change State")
+            action("Go to next state")
             {
                 Scope = Page;
 
@@ -80,6 +71,11 @@ page 50126 "S1P-Document Lines"
         DocumentNo: Code[20];
         SKUDescBuilder: TextBuilder;
     begin
+        Clear(DocumentText);
+        Clear(SKUText);
+        if Rec.IsEmpty() then
+            exit;
+
         DocumentText := StrSubstNo('%1 %2', Rec."Document Type", '<Number>');
         SKUDescBuilder.Append('Item ');
         SKUDescBuilder.Append(Rec."Item No.");

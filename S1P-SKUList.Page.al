@@ -137,8 +137,10 @@ page 50125 "S1P-SKU List"
         }
     }
 
-    trigger OnAfterGetRecord()
+    procedure RefreshValues()
+    var
+        myInt: Integer;
     begin
-        Rec.CalculateValues();
+        Rec.CalculateValues(Rec);
     end;
 }

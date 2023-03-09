@@ -1,10 +1,10 @@
-table 50122 "S1P-Warehouse Line"
+table 50122 "S1P-Whse. Document Line"
 {
     DataClassification = ToBeClassified;
 
     fields
     {
-        field(1; "Warehouse Document Type"; Integer)
+        field(1; "Warehouse Document Type"; Enum "S1P-Whse. Document Type")
         {
             Editable = false;
         }

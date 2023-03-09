@@ -1,9 +1,10 @@
-page 50127 "S1P-Warehouse Lines"
+page 50127 "S1P-Whse. Document Lines"
 {
     PageType = ListPart;
     ApplicationArea = All;
-    SourceTable = "S1P-Warehouse Line";
-    InsertAllowed = true;
+    SourceTable = "S1P-Whse. Document Line";
+    SourceTableTemporary = true;
+    InsertAllowed = false;
     ModifyAllowed = true;
     DeleteAllowed = true;
 
@@ -13,11 +14,11 @@ page 50127 "S1P-Warehouse Lines"
         {
             repeater(DocumentLines)
             {
-                field(Document; Document)
+                field(Document; DocumentText)
                 {
                     Editable = false;
                 }
-                field(SKU; SKU)
+                field(SKU; SKUText)
                 {
                     Editable = false;
                 }
@@ -45,16 +46,7 @@ page 50127 "S1P-Warehouse Lines"
     {
         area(Processing)
         {
-            action("View Whse. Document")
-            {
-                Scope = Page;
-
-                trigger OnAction();
-                begin
-
-                end;
-            }
-            action("Change State")
+            action("Go to next state")
             {
                 Scope = Page;
 
@@ -67,8 +59,10 @@ page 50127 "S1P-Warehouse Lines"
     }
 
     var
-        Document: Text[100];
-        SKU: Text[100];
+        WhseDocument: Record "S1P-Whse. Document" temporary;
+        WhseDocumentLine: Record "S1P-Whse. Document Line" temporary;
+        DocumentText: Text[100];
+        SKUText: Text[100];
         CurrentState: Text[50];
         NextState: Text[50];
 
@@ -77,7 +71,12 @@ page 50127 "S1P-Warehouse Lines"
         DocumentNo: Code[20];
         SKUDescBuilder: TextBuilder;
     begin
-        Document := StrSubstNo('%1 %2', Rec."Warehouse Document Type", '<Number>');
+        Clear(DocumentText);
+        Clear(SKUText);
+        if Rec.IsEmpty() then
+            exit;
+
+        DocumentText := StrSubstNo('%1 %2', Rec."Warehouse Document Type", '<Number>');
         SKUDescBuilder.Append('Item ');
         SKUDescBuilder.Append(Rec."Item No.");
         if Rec."Variant Code" <> '' then begin
@@ -88,6 +87,20 @@ page 50127 "S1P-Warehouse Lines"
             SKUDescBuilder.Append(' at location ');
             SKUDescBuilder.Append(Rec."Location Code");
         end;
-        SKU := SKUDescBuilder.ToText();
+        SKUText := SKUDescBuilder.ToText();
+    end;
+
+    procedure GetWarehouseDocuments()
+    var
+        MySKU: Record "S1P-SKU";
+    begin
+        WhseDocument.DeleteAll();
+        WhseDocumentLine.DeleteAll();
+
+        if MySKU.FindSet() then
+            repeat
+                MySKU.GetWarehouseDocuments(WhseDocument, WhseDocumentLine);
+            until MySKU.Next() = 0;
+        Rec.Copy(WhseDocumentLine, true);
     end;
 }
