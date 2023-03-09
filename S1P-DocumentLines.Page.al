@@ -49,6 +49,7 @@ page 50126 "S1P-Document Lines"
             action("Go to next state")
             {
                 Scope = Page;
+                Image = GoTo;
 
                 trigger OnAction();
                 begin
