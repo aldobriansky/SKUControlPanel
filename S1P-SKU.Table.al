@@ -206,6 +206,7 @@ table 50120 "S1P-SKU"
                 InitDocument(Document, DocumentLine, Document."Document Type"::Sale, SalesLine.RecordId, Rec);
                 DocumentLine.Quantity := SalesLine."Quantity (Base)";
                 DocumentLine."Qty. to Handle" := SalesLine."Qty. to Ship (Base)";
+                Synchronizer.GetCurrentStateForDocumentLine(DocumentLine);
                 DocumentLine.Insert();
                 Document.Insert();
             until SalesLine.Next() = 0;
@@ -225,6 +226,7 @@ table 50120 "S1P-SKU"
                 InitDocument(Document, DocumentLine, Document."Document Type"::Output, ProdOrderLine.RecordId, Rec);
                 DocumentLine.Quantity := ProdOrderLine."Quantity (Base)";
                 DocumentLine."Qty. to Handle" := ProdOrderLine."Remaining Qty. (Base)";
+                Synchronizer.GetCurrentStateForDocumentLine(DocumentLine);
                 DocumentLine.Insert();
                 Document.Insert();
             until ProdOrderLine.Next() = 0;
@@ -234,6 +236,7 @@ table 50120 "S1P-SKU"
                 InitDocument(Document, DocumentLine, Document."Document Type"::Consumption, ProdOrderComponent.RecordId, Rec);
                 DocumentLine.Quantity := ProdOrderComponent."Quantity (Base)";
                 DocumentLine."Qty. to Handle" := ProdOrderComponent."Remaining Qty. (Base)";
+                Synchronizer.GetCurrentStateForDocumentLine(DocumentLine);
                 DocumentLine.Insert();
                 Document.Insert();
             until ProdOrderLine.Next() = 0;
