@@ -195,6 +195,7 @@ table 50120 "S1P-SKU"
         PurchaseLine: Record "Purchase Line";
         ProdOrderLine: Record "Prod. Order Line";
         ProdOrderComponent: Record "Prod. Order Component";
+        Synchronizer: Codeunit "S1P-Synchronizer";
     begin
         Item.Get(Rec."Item No.");
         Item.SetRange("Variant Filter", Rec."Variant Code");
@@ -214,6 +215,7 @@ table 50120 "S1P-SKU"
                 InitDocument(Document, DocumentLine, Document."Document Type"::Purchase, PurchaseLine.RecordId, Rec);
                 DocumentLine.Quantity := PurchaseLine."Quantity (Base)";
                 DocumentLine."Qty. to Handle" := PurchaseLine."Qty. to Receive (Base)";
+                Synchronizer.GetCurrentStateForDocumentLine(DocumentLine);
                 DocumentLine.Insert();
                 Document.Insert();
             until SalesLine.Next() = 0;

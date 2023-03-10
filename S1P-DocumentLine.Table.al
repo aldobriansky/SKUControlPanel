@@ -39,6 +39,14 @@ table 50121 "S1P-Document Line"
             BlankNumbers = BlankZero;
             DecimalPlaces = 0 : 5;
         }
+        field(210; "Current State"; Text[50])
+        {
+
+        }
+        field(220; "Next State"; Text[50])
+        {
+
+        }
     }
 
     keys

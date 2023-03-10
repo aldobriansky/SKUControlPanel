@@ -35,9 +35,9 @@ page 50126 "S1P-Document Lines"
                 {
 
                 }
-                field("Current State"; CurrentState)
+                field("Current State"; Rec."Current State")
                 {
-                    Editable = false;
+
                 }
                 field("Next State"; NextState)
                 {
@@ -69,7 +69,6 @@ page 50126 "S1P-Document Lines"
         DocumentLine: Record "S1P-Document Line" temporary;
         DocumentText: Text[100];
         SKUText: Text[100];
-        CurrentState: Text[50];
         NextState: Text[50];
 
     trigger OnAfterGetRecord()
