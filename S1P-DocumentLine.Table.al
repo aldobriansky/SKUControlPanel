@@ -72,4 +72,73 @@ table 50121 "S1P-Document Line"
 
     end;
 
+    procedure GetDocumentNo(): Code[20]
+    var
+        PurchaseLine: Record "Purchase Line";
+        SalesLine: Record "Sales Line";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProdOrderComponent: Record "Prod. Order Component";
+    begin
+        case "Document Type" of
+            "Document Type"::Purchase:
+                begin
+                    PurchaseLine.SetLoadFields("Document No.");
+                    PurchaseLine.Get("Record ID");
+                    exit(PurchaseLine."No.");
+                end;
+            "Document Type"::Sale:
+                begin
+                    SalesLine.SetLoadFields("Document No.");
+                    SalesLine.Get("Record ID");
+                    exit(SalesLine."Document No.");
+                end;
+            "Document Type"::Output:
+                begin
+                    ProdOrderLine.SetLoadFields("Prod. Order No.");
+                    ProdOrderLine.Get("Record ID");
+                    exit(ProdOrderLine."Prod. Order No.");
+                end;
+            "Document Type"::Consumption:
+                begin
+                    ProdOrderComponent.SetLoadFields("Prod. Order No.");
+                    ProdOrderComponent.Get("Record ID");
+                    exit(ProdOrderComponent."Prod. Order No.");
+                end;
+        end;
+    end;
+
+    procedure ShowDocument()
+    var
+        PurchaseLine: Record "Purchase Line";
+        SalesLine: Record "Sales Line";
+        ProdOrderLine: Record "Prod. Order Line";
+        ProdOrderComponent: Record "Prod. Order Component";
+    begin
+        case "Document Type" of
+            "Document Type"::Purchase:
+                begin
+                    PurchaseLine.Get("Record ID");
+                    PurchaseLine.SetRecFilter();
+                    Page.Run(0, PurchaseLine);
+                end;
+            "Document Type"::Sale:
+                begin
+                    SalesLine.Get("Record ID");
+                    SalesLine.SetRecFilter();
+                    Page.Run(0, SalesLine);
+                end;
+            "Document Type"::Output:
+                begin
+                    ProdOrderLine.Get("Record ID");
+                    ProdOrderLine.SetRecFilter();
+                    Page.Run(0, ProdOrderLine);
+                end;
+            "Document Type"::Consumption:
+                begin
+                    ProdOrderComponent.Get("Record ID");
+                    ProdOrderComponent.SetRecFilter();
+                    Page.Run(0, ProdOrderComponent);
+                end;
+        end;
+    end;
 }

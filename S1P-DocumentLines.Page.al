@@ -17,6 +17,11 @@ page 50126 "S1P-Document Lines"
                 field(Document; DocumentText)
                 {
                     Editable = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.ShowDocument();
+                    end;
                 }
                 field(SKU; SKUText)
                 {
@@ -77,7 +82,7 @@ page 50126 "S1P-Document Lines"
         if Rec.IsEmpty() then
             exit;
 
-        DocumentText := StrSubstNo('%1 %2', Rec."Document Type", '<Number>');
+        DocumentText := StrSubstNo('%1 %2', Rec."Document Type", Rec.GetDocumentNo());
         SKUDescBuilder.Append('Item ');
         SKUDescBuilder.Append(Rec."Item No.");
         if Rec."Variant Code" <> '' then begin

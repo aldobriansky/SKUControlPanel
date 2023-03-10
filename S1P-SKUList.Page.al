@@ -51,19 +51,19 @@ page 50125 "S1P-SKU List"
                 }
                 field("Sales Qty."; Rec."Sales Qty.")
                 {
-
-                }
-                field("Purchase Qty."; Rec."Purchase Qty.")
-                {
-
-                }
-                field("Prod. Output Qty."; Rec."Prod. Output Qty.")
-                {
-
+                    Caption = 'Demand: Sales';
                 }
                 field("Prod. Consumption Qty."; Rec."Prod. Consumption Qty.")
                 {
-
+                    Caption = 'Demand: Component consumption';
+                }
+                field("Purchase Qty."; Rec."Purchase Qty.")
+                {
+                    Caption = 'Supply: Purchase';
+                }
+                field("Prod. Output Qty."; Rec."Prod. Output Qty.")
+                {
+                    Caption = 'Supply: Production';
                 }
             }
         }

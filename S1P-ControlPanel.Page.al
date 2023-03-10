@@ -30,24 +30,18 @@ page 50120 "S1P-Control Panel"
                 ShowFilter = false;
                 UpdatePropagation = Both;
             }
-            group(WhereUsed)
+            part(Documents; "S1P-Document Lines")
             {
-                ShowCaption = false;
-
-                part(Documents; "S1P-Document Lines")
-                {
-                    ShowFilter = false;
-                    UpdatePropagation = Both;
-                    Caption = 'Documents';
-                }
-                part(WhseDocuments; "S1P-Whse. Document Lines")
-                {
-                    ShowFilter = false;
-                    UpdatePropagation = Both;
-                    Caption = 'Warehouse';
-                }
+                ShowFilter = false;
+                UpdatePropagation = Both;
+                Caption = 'Documents';
             }
-
+            part(WhseDocuments; "S1P-Whse. Document Lines")
+            {
+                ShowFilter = false;
+                UpdatePropagation = Both;
+                Caption = 'Warehouse';
+            }
         }
     }
 

@@ -72,4 +72,57 @@ table 50122 "S1P-Whse. Document Line"
 
     end;
 
+    procedure GetWhseDocumentNo(): Code[20]
+    var
+        WarehouseReceiptLine: Record "Warehouse Receipt Line";
+        WarehouseShipmentLine: Record "Warehouse Shipment Line";
+        WarehouseActivityLine: Record "Warehouse Activity Line";
+    begin
+        case "Warehouse Document Type" of
+            "Warehouse Document Type"::Receipt:
+                begin
+                    WarehouseReceiptLine.SetLoadFields("No.");
+                    WarehouseReceiptLine.Get("Record ID");
+                    exit(WarehouseReceiptLine."No.");
+                end;
+            "Warehouse Document Type"::Shipment:
+                begin
+                    WarehouseShipmentLine.SetLoadFields("No.");
+                    WarehouseShipmentLine.Get("Record ID");
+                    exit(WarehouseShipmentLine."No.");
+                end;
+            else begin
+                WarehouseActivityLine.SetLoadFields("No.");
+                WarehouseActivityLine.Get("Record ID");
+                exit(WarehouseActivityLine."No.");
+            end;
+        end;
+    end;
+
+    procedure ShowWhseDocument()
+    var
+        WarehouseReceiptLine: Record "Warehouse Receipt Line";
+        WarehouseShipmentLine: Record "Warehouse Shipment Line";
+        WarehouseActivityLine: Record "Warehouse Activity Line";
+    begin
+        case "Warehouse Document Type" of
+            "Warehouse Document Type"::Receipt:
+                begin
+                    WarehouseReceiptLine.Get("Record ID");
+                    WarehouseReceiptLine.SetRecFilter();
+                    Page.Run(0, WarehouseReceiptLine);
+                end;
+            "Warehouse Document Type"::Shipment:
+                begin
+                    WarehouseReceiptLine.Get("Record ID");
+                    WarehouseReceiptLine.SetRecFilter();
+                    Page.Run(0, WarehouseReceiptLine);
+                end;
+            else begin
+                WarehouseActivityLine.Get("Record ID");
+                WarehouseActivityLine.SetRecFilter();
+                Page.Run(0, WarehouseActivityLine);
+            end;
+        end;
+    end;
 }

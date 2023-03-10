@@ -17,6 +17,11 @@ page 50127 "S1P-Whse. Document Lines"
                 field(Document; DocumentText)
                 {
                     Editable = false;
+
+                    trigger OnDrillDown()
+                    begin
+                        Rec.ShowWhseDocument();
+                    end;
                 }
                 field(SKU; SKUText)
                 {
@@ -77,7 +82,7 @@ page 50127 "S1P-Whse. Document Lines"
         if Rec.IsEmpty() then
             exit;
 
-        DocumentText := StrSubstNo('%1 %2', Rec."Warehouse Document Type", '<Number>');
+        DocumentText := StrSubstNo('%1 %2', Rec."Warehouse Document Type", Rec.GetWhseDocumentNo());
         SKUDescBuilder.Append('Item ');
         SKUDescBuilder.Append(Rec."Item No.");
         if Rec."Variant Code" <> '' then begin

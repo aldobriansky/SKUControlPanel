@@ -43,6 +43,7 @@ table 50120 "S1P-SKU"
             Caption = 'Sales Quantity';
             BlankNumbers = BlankZero;
             DecimalPlaces = 0 : 5;
+            Editable = false;
         }
         field(210; "New Sales Qty."; Decimal)
         {
@@ -79,6 +80,7 @@ table 50120 "S1P-SKU"
             Caption = 'Prod. Consumption Quantity';
             BlankNumbers = BlankZero;
             DecimalPlaces = 0 : 5;
+            Editable = false;
         }
         field(510; "New Prod. Consumption Qty."; Decimal)
         {
