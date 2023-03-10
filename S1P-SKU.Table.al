@@ -88,6 +88,12 @@ table 50120 "S1P-SKU"
             BlankNumbers = BlankZero;
             DecimalPlaces = 0 : 5;
         }
+        field(900; "Planning Suggestions"; Decimal)
+        {
+            Caption = 'Planning Suggestions';
+            BlankNumbers = BlankZero;
+            DecimalPlaces = 0 : 5;
+        }
         field(1000; "SKU Exists"; Boolean)
         {
             CalcFormula = exist("Stockkeeping Unit" where("Location Code" = field("Location Code"),
@@ -166,6 +172,20 @@ table 50120 "S1P-SKU"
                 MySKU.Modify();
             until MySKU.Next() = 0;
         if CurrentSKU.Find() then;
+    end;
+
+    procedure CalculatePlanningSuggestions()
+    var
+        Planning: Codeunit "S1P-Planning";
+    begin
+        Planning.GivePlanningAdvice(Rec);
+    end;
+
+    procedure OpenPlanningWorksheet()
+    var
+        Planning: Codeunit "S1P-Planning";
+    begin
+        Planning.OpenPlanningWorksheet();
     end;
 
     procedure GetDocuments(var Document: Record "S1P-Document" temporary; var DocumentLine: Record "S1P-Document Line" temporary)

@@ -65,6 +65,10 @@ page 50125 "S1P-SKU List"
                 {
                     Caption = 'Supply: Production';
                 }
+                field("Planning Suggestions"; Rec."Planning Suggestions")
+                {
+
+                }
             }
         }
     }
@@ -131,6 +135,29 @@ page 50125 "S1P-SKU List"
                             Rec.AddSKUs(SKU);
                             CurrPage.Update();
                         end;
+                    end;
+                }
+            }
+            group(Planning)
+            {
+                action("Suggest Planning")
+                {
+                    Caption = 'Give planning advice';
+                    Image = Planning;
+
+                    trigger OnAction()
+                    begin
+                        Rec.CalculatePlanningSuggestions();
+                    end;
+                }
+                action("Open Planning Worksheet")
+                {
+                    Caption = 'View planning advice';
+                    Image = PlanningWorksheet;
+
+                    trigger OnAction()
+                    begin
+                        Rec.OpenPlanningWorksheet();
                     end;
                 }
             }
