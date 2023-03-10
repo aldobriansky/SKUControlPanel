@@ -234,7 +234,7 @@ table 50120 "S1P-SKU"
         if ProdOrderComponent.FindLinesWithItemToPlan(Item, true) then
             repeat
                 InitDocument(Document, DocumentLine, Document."Document Type"::Consumption, ProdOrderComponent.RecordId, Rec);
-                DocumentLine.Quantity := ProdOrderComponent."Quantity (Base)";
+                DocumentLine.Quantity := ProdOrderComponent."Expected Qty. (Base)";
                 DocumentLine."Qty. to Handle" := ProdOrderComponent."Remaining Qty. (Base)";
                 Synchronizer.GetCurrentStateForDocumentLine(DocumentLine);
                 DocumentLine.Insert();
