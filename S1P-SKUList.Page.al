@@ -142,7 +142,7 @@ page 50125 "S1P-SKU List"
             {
                 action("Suggest Planning")
                 {
-                    Caption = 'Give planning advice';
+                    Caption = 'Get planning advice';
                     Image = Planning;
 
                     trigger OnAction()

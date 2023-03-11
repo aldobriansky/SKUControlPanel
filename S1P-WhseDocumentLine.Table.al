@@ -41,11 +41,17 @@ table 50122 "S1P-Whse. Document Line"
         }
         field(210; "Current State"; Text[50])
         {
-
+            trigger OnLookup()
+            begin
+                "Current State" := LookupState();
+            end;
         }
         field(220; "Next State"; Text[50])
         {
-
+            trigger OnLookup()
+            begin
+                "Current State" := LookupState();
+            end;
         }
     }
 
@@ -132,5 +138,9 @@ table 50122 "S1P-Whse. Document Line"
                 Page.Run(0, WarehouseActivityLine);
             end;
         end;
+    end;
+
+    local procedure LookupState(): Text[50]
+    begin
     end;
 }

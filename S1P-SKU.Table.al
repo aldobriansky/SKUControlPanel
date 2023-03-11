@@ -248,6 +248,7 @@ table 50120 "S1P-SKU"
         WhseReceiptLine: Record "Warehouse Receipt Line";
         WhseShipmentLine: Record "Warehouse Shipment Line";
         WhseActivityLine: Record "Warehouse Activity Line";
+        Synchronizer: Codeunit "S1P-Synchronizer";
         WhseDocumentType: Enum "S1P-Whse. Document Type";
     begin
         Item.Get(Rec."Item No.");
@@ -263,6 +264,7 @@ table 50120 "S1P-SKU"
                 InitWarehouseDocument(WhseDocument, WhseDocumentLine, "S1P-Whse. Document Type"::Receipt, WhseReceiptLine.RecordId, Rec);
                 WhseDocumentLine.Quantity := WhseReceiptLine."Qty. (Base)";
                 WhseDocumentLine."Qty. to Handle" := WhseReceiptLine."Qty. to Receive (Base)";
+                Synchronizer.GetCurrentStateForWhseDocumentLine(WhseDocumentLine);
                 WhseDocumentLine.Insert();
                 WhseDocument.Insert();
             until WhseReceiptLine.Next() = 0;
@@ -276,6 +278,7 @@ table 50120 "S1P-SKU"
                 InitWarehouseDocument(WhseDocument, WhseDocumentLine, "S1P-Whse. Document Type"::Shipment, WhseShipmentLine.RecordId, Rec);
                 WhseDocumentLine.Quantity := WhseShipmentLine."Qty. (Base)";
                 WhseDocumentLine."Qty. to Handle" := WhseShipmentLine."Qty. to Ship (Base)";
+                Synchronizer.GetCurrentStateForWhseDocumentLine(WhseDocumentLine);
                 WhseDocumentLine.Insert();
                 WhseDocument.Insert();
             until WhseShipmentLine.Next() = 0;
@@ -299,6 +302,7 @@ table 50120 "S1P-SKU"
                 InitWarehouseDocument(WhseDocument, WhseDocumentLine, WhseDocumentType, WhseActivityLine.RecordId, Rec);
                 WhseDocumentLine.Quantity := WhseActivityLine."Qty. (Base)";
                 WhseDocumentLine."Qty. to Handle" := WhseActivityLine."Qty. to Handle (Base)";
+                Synchronizer.GetCurrentStateForWhseDocumentLine(WhseDocumentLine);
                 WhseDocumentLine.Insert();
                 WhseDocument.Insert();
             until WhseActivityLine.Next() = 0;

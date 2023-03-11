@@ -39,7 +39,7 @@ page 50126 "S1P-Document Lines"
                 {
 
                 }
-                field("Next State"; NextState)
+                field("Next State"; Rec."Next State")
                 {
 
                 }
@@ -69,7 +69,6 @@ page 50126 "S1P-Document Lines"
         DocumentLine: Record "S1P-Document Line" temporary;
         DocumentText: Text[100];
         SKUText: Text[100];
-        NextState: Text[50];
 
     trigger OnAfterGetRecord()
     var

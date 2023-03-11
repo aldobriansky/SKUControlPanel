@@ -41,11 +41,17 @@ table 50121 "S1P-Document Line"
         }
         field(210; "Current State"; Text[50])
         {
-
+            trigger OnLookup()
+            begin
+                "Current State" := LookupState("Current State");
+            end;
         }
         field(220; "Next State"; Text[50])
         {
-
+            trigger OnLookup()
+            begin
+                "Next State" := LookupState("Next State");
+            end;
         }
     }
 
@@ -148,5 +154,20 @@ table 50121 "S1P-Document Line"
                     Page.Run(0, ProdOrderComponent);
                 end;
         end;
+    end;
+
+    local procedure LookupState(xState: Text): Text[50]
+    var
+        State: Record "S1P-State";
+        States: Page "S1P-States";
+    begin
+        States.SetDocumentType("Document Type");
+        States.LookupMode := true;
+        if States.RunModal() = Action::LookupOK then begin
+            States.GetRecord(State);
+            exit(State.Name);
+        end;
+
+        exit(xState);
     end;
 }
