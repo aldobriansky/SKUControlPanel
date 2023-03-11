@@ -35,7 +35,7 @@ page 50127 "S1P-Whse. Document Lines"
                 {
 
                 }
-                field("Current State"; CurrentState)
+                field("Current State"; Rec."Current State")
                 {
                     Editable = false;
                 }

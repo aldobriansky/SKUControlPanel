@@ -40,6 +40,30 @@ codeunit 50121 "S1P-Synchronizer"
         end;
     end;
 
+    procedure GetCurrentStateForWhseDocumentLine(var WhseDocumentLine: Record "S1P-Whse. Document Line")
+    var
+        WhseShipmentState: Enum "S1P-Whse. Shipment States";
+        WhseOtherDocsState: Enum "S1P-Whse. Other Docs States";
+    begin
+        WhseDocumentLine."Current State" := '';
+        case WhseDocumentLine."Warehouse Document Type" of
+            WhseDocumentLine."Warehouse Document Type"::Shipment:
+                begin
+                    GetCurrentStateForWhseShipmentLine(WhseDocumentLine, WhseShipmentState);
+                    WhseDocumentLine."Current State" := StrSubstNo('%1', WhseShipmentState);
+                end;
+            WhseDocumentLine."Warehouse Document Type"::Receipt:
+                begin
+                    GetCurrentStateForWhseReceiptLine(WhseDocumentLine, WhseOtherDocsState);
+                    WhseDocumentLine."Current State" := StrSubstNo('%1', WhseOtherDocsState);
+                end;
+            else begin
+                GetCurrentStateForWhseOtherDocumentLine(WhseDocumentLine, WhseOtherDocsState);
+                WhseDocumentLine."Current State" := StrSubstNo('%1', WhseOtherDocsState);
+            end;
+        end;
+    end;
+
     local procedure GetCurrentStateForPurchaseLine(DocumentLine: Record "S1P-Document Line"; var CurrentState: Enum "S1P-Purchase States")
     var
         PurchaseHeader: Record "Purchase Header";
@@ -168,5 +192,59 @@ codeunit 50121 "S1P-Synchronizer"
         end;
 
         CurrentState := CurrentState::"Can be consumed";
+    end;
+
+    local procedure GetCurrentStateForWhseShipmentLine(WhseDocumentLine: Record "S1P-Whse. Document Line"; var CurrentState: Enum "S1P-Whse. Shipment States")
+    var
+        WhseShipmentLine: Record "Warehouse Shipment Line";
+        Location: Record Location;
+    begin
+        WhseShipmentLine.Get(WhseDocumentLine."Record ID");
+        Location.Get(WhseDocumentLine."Location Code");
+
+        if WhseShipmentLine."Qty. Outstanding" = 0 then begin
+            CurrentState := CurrentState::Posted;
+            exit;
+        end;
+
+        if WhseShipmentLine."Qty. to Ship" <> 0 then begin
+            CurrentState := CurrentState::"Can be posted";
+            exit;
+        end;
+
+        if Location."Require Pick" then begin
+            CurrentState := CurrentState::"Create Pick";
+            exit;
+        end;
+
+        CurrentState := CurrentState::Created;
+    end;
+
+    local procedure GetCurrentStateForWhseReceiptLine(WhseDocumentLine: Record "S1P-Whse. Document Line"; var CurrentState: Enum "S1P-Whse. Other Docs States")
+    var
+        WhseReceiptLine: Record "Warehouse Receipt Line";
+    begin
+        WhseReceiptLine.Get(WhseDocumentLine."Record ID");
+
+        if WhseReceiptLine."Qty. Outstanding" = 0 then begin
+            CurrentState := CurrentState::Posted;
+            exit;
+        end;
+
+        CurrentState := CurrentState::Created;
+    end;
+
+    local procedure GetCurrentStateForWhseOtherDocumentLine(WhseDocumentLine: Record "S1P-Whse. Document Line"; var CurrentState: Enum "S1P-Whse. Other Docs States")
+    var
+        WhseActitivyLine: Record "Warehouse Activity Line";
+    begin
+        WhseActitivyLine.Get(WhseDocumentLine."Record ID");
+
+        if WhseActitivyLine."Qty. Outstanding" = 0 then begin
+            CurrentState := CurrentState::Posted;
+            exit;
+        end;
+
+        CurrentState := CurrentState::Created;
     end;
 }
