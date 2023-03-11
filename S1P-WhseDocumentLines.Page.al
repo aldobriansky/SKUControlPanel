@@ -37,9 +37,9 @@ page 50127 "S1P-Whse. Document Lines"
                 }
                 field("Current State"; Rec."Current State")
                 {
-                    Editable = false;
+
                 }
-                field("Next State"; NextState)
+                field("Next State"; Rec."Next State")
                 {
 
                 }
@@ -69,8 +69,6 @@ page 50127 "S1P-Whse. Document Lines"
         WhseDocumentLine: Record "S1P-Whse. Document Line" temporary;
         DocumentText: Text[100];
         SKUText: Text[100];
-        CurrentState: Text[50];
-        NextState: Text[50];
 
     trigger OnAfterGetRecord()
     var

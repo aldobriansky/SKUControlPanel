@@ -156,7 +156,7 @@ table 50121 "S1P-Document Line"
         end;
     end;
 
-    local procedure LookupState(xState: Text): Text[50]
+    local procedure LookupState(xState: Text[50]): Text[50]
     var
         State: Record "S1P-State";
         States: Page "S1P-States";

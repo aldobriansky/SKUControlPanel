@@ -43,14 +43,14 @@ table 50122 "S1P-Whse. Document Line"
         {
             trigger OnLookup()
             begin
-                "Current State" := LookupState();
+                "Current State" := LookupState("Current State");
             end;
         }
         field(220; "Next State"; Text[50])
         {
             trigger OnLookup()
             begin
-                "Current State" := LookupState();
+                "Next State" := LookupState("Next State");
             end;
         }
     }
@@ -140,7 +140,18 @@ table 50122 "S1P-Whse. Document Line"
         end;
     end;
 
-    local procedure LookupState(): Text[50]
+    local procedure LookupState(xState: Text[50]): Text[50]
+    var
+        State: Record "S1P-State";
+        States: Page "S1P-States";
     begin
+        States.SetWhseDocumentType("Warehouse Document Type");
+        States.LookupMode := true;
+        if States.RunModal() = Action::LookupOK then begin
+            States.GetRecord(State);
+            exit(State.Name);
+        end;
+
+        exit(xState);
     end;
 }

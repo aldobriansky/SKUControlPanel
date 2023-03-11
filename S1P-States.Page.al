@@ -44,6 +44,8 @@ page 50128 "S1P-States"
         SalesStates: Enum "S1P-Sales States";
         ProdOrderStates: Enum "S1P-Prod. Order States";
         ProdOrderComponentStates: Enum "S1P-Prod. Order Comp. States";
+        WhseShipmentStates: Enum "S1P-Whse. Shipment States";
+        WhseOtherDocsStates: Enum "S1P-Whse. Other Docs States";
         States: List of [Text];
         State: Text[50];
         i: Integer;
@@ -62,13 +64,29 @@ page 50128 "S1P-States"
                 DocumentType::Consumption:
                     States := ProdOrderComponentStates.Names;
             end;
-
             foreach State in States do begin
                 Rec.Ordinal := i;
                 Rec.Name := State;
                 Rec.Insert();
                 i += 1;
             end;
+            exit;
+        end;
+
+        if What = What::Warehouse then begin
+            case WhseDocumentType of
+                WhseDocumentType::Shipment:
+                    States := WhseShipmentStates.Names;
+                else
+                    States := WhseOtherDocsStates.Names;
+            end;
+            foreach State in States do begin
+                Rec.Ordinal := i;
+                Rec.Name := State;
+                Rec.Insert();
+                i += 1;
+            end;
+            exit;
         end;
     end;
 }
