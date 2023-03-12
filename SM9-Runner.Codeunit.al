@@ -63,4 +63,48 @@ codeunit 50111 "SM9-Runner"
         StateSequence."Event Subscriber" := 'InvoicePurchaseOrder';
         StateSequence.Insert();
     end;
+
+    procedure CreateStateSequenceForSales()
+    var
+        StateSequence: Record "SM9-State Sequence";
+    begin
+        StateSequence.SetRange("Document Type", "Item Ledger Entry Type"::Sale.AsInteger());
+        StateSequence.DeleteAll();
+
+        StateSequence."Entry No." := 101;
+        StateSequence."Document Type" := "Item Ledger Entry Type"::Sale.AsInteger();
+        StateSequence."Document No." := '';
+        StateSequence."Operation No." := 10;
+        StateSequence."Current State" := 'Waiting for release';
+        StateSequence."Next State" := 'Requires warehouse handling';
+        StateSequence."Event Subscriber" := 'ReleaseSalesOrder';
+        StateSequence.Insert();
+
+        StateSequence."Entry No." := 102;
+        StateSequence."Document Type" := "Item Ledger Entry Type"::Sale.AsInteger();
+        StateSequence."Document No." := '';
+        StateSequence."Operation No." := 20;
+        StateSequence."Current State" := 'Requires warehouse handling';
+        StateSequence."Next State" := 'Can be shipped';
+        StateSequence."Event Subscriber" := 'CheckWarehouseForSalesOrder';
+        StateSequence.Insert();
+
+        StateSequence."Entry No." := 103;
+        StateSequence."Document Type" := "Item Ledger Entry Type"::Sale.AsInteger();
+        StateSequence."Document No." := '';
+        StateSequence."Operation No." := 30;
+        StateSequence."Current State" := 'Can be shipped';
+        StateSequence."Next State" := 'Can be invoiced';
+        StateSequence."Event Subscriber" := 'ShipSalesOrder';
+        StateSequence.Insert();
+
+        StateSequence."Entry No." := 4;
+        StateSequence."Document Type" := "Item Ledger Entry Type"::Sale.AsInteger();
+        StateSequence."Document No." := '';
+        StateSequence."Operation No." := 40;
+        StateSequence."Current State" := 'Can be invoiced';
+        StateSequence."Next State" := 'Invoiced';
+        StateSequence."Event Subscriber" := 'InvoiceSalesOrder';
+        StateSequence.Insert();
+    end;
 }

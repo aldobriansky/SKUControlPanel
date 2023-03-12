@@ -55,6 +55,7 @@ page 50127 "S1P-Whse. Document Lines"
             {
                 Scope = Page;
                 Image = GoTo;
+                Enabled = false;
 
                 trigger OnAction();
                 begin
