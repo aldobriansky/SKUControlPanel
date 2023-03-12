@@ -116,24 +116,6 @@ table 50120 "S1P-SKU"
         }
     }
 
-    var
-        myInt: Integer;
-
-    trigger OnInsert()
-    begin
-
-    end;
-
-    trigger OnModify()
-    begin
-
-    end;
-
-    trigger OnDelete()
-    begin
-
-    end;
-
     procedure CalculateValues()
     var
         StockkeepingUnit: Record "Stockkeeping Unit";

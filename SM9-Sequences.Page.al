@@ -13,11 +13,11 @@ page 50148 "SM9-Sequences"
             {
                 field("Entry No."; Rec."Entry No.")
                 {
-
+                    Visible = false;
                 }
                 field("Document Type"; Rec."Document Type")
                 {
-
+                    Visible = false;
                 }
                 field("Document No."; Rec."Document No.")
                 {

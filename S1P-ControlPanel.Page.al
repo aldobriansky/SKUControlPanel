@@ -9,8 +9,6 @@ page 50120 "S1P-Control Panel"
     ModifyAllowed = true;
     InsertAllowed = false;
     ApplicationArea = All;
-    // AboutTitle = 'About SKU main page.';
-    // AboutText = 'Follow and manage your SKU.';
 
     layout
     {
@@ -65,9 +63,6 @@ page 50120 "S1P-Control Panel"
             actionref(Refresh_Promoted; Refresh) { }
         }
     }
-
-    var
-        myInt: Integer;
 
     local procedure UpdateParts()
     begin

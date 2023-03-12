@@ -6,9 +6,6 @@ codeunit 50120 "S1P-Planning"
     begin
     end;
 
-    var
-        myInt: Integer;
-
     procedure GivePlanningAdvice(var CurrentSKU: Record "S1P-SKU")
     var
         MySKU: Record "S1P-SKU";

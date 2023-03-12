@@ -63,29 +63,6 @@ table 50121 "S1P-Document Line"
         }
     }
 
-    var
-        myInt: Integer;
-
-    trigger OnInsert()
-    begin
-
-    end;
-
-    trigger OnModify()
-    begin
-
-    end;
-
-    trigger OnDelete()
-    begin
-
-    end;
-
-    trigger OnRename()
-    begin
-
-    end;
-
     procedure GetDocumentNo(): Code[20]
     var
         PurchaseLine: Record "Purchase Line";
@@ -154,6 +131,21 @@ table 50121 "S1P-Document Line"
                     Page.Run(0, ProdOrderComponent);
                 end;
         end;
+    end;
+
+    procedure GoToNextState()
+    var
+        Runner: Codeunit "SM9-Runner";
+    begin
+        Runner.Run(Rec);
+    end;
+
+    procedure ShowStateSequence()
+    var
+        StateSequence: Record "SM9-State Sequence";
+    begin
+        StateSequence.SetRange("Document Type", "Document Type");
+        Page.Run(Page::"SM9-Sequences", StateSequence);
     end;
 
     local procedure LookupState(xState: Text[50]): Text[50]

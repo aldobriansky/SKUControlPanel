@@ -12,15 +12,9 @@ codeunit 50111 "SM9-Runner"
         BindSubscription(Subscriber);
 
         Document.Copy(Rec);
-        if Document.FindSet() then
-            repeat
-                if Publisher.Run(Document) then;
-                //     Document."Last Error" := ''
-                // else
-                //     Document."Last Error" := GetLastErrorText();
-                Document.Modify();
-                Commit();
-            until Document.Next() = 0;
+        if Publisher.Run(Document) then;
+        Document.Modify();
+        Commit();
         Rec.Copy(Document);
 
         UnbindSubscription(Subscriber);
@@ -48,7 +42,7 @@ codeunit 50111 "SM9-Runner"
         StateSequence."Operation No." := 20;
         StateSequence."Current State" := 'Requires warehouse handling';
         StateSequence."Next State" := 'Can be received';
-        StateSequence."Event Subscriber" := 'PrepareForReceivePurchaseOrder';
+        StateSequence."Event Subscriber" := 'CheckWarehouseForPurchaseOrder';
         StateSequence.Insert();
 
         StateSequence."Entry No." := 3;
@@ -57,7 +51,7 @@ codeunit 50111 "SM9-Runner"
         StateSequence."Operation No." := 30;
         StateSequence."Current State" := 'Can be received';
         StateSequence."Next State" := 'Can be invoiced';
-        StateSequence."Event Subscriber" := 'PrepareForInvoicePurchaseOrder';
+        StateSequence."Event Subscriber" := 'ReceivePurchaseOrder';
         StateSequence.Insert();
 
         StateSequence."Entry No." := 4;

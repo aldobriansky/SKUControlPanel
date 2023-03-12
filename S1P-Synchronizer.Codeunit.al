@@ -5,9 +5,6 @@ codeunit 50121 "S1P-Synchronizer"
 
     end;
 
-    var
-        myInt: Integer;
-
     procedure GetCurrentStateForDocumentLine(var DocumentLine: Record "S1P-Document Line")
     var
         PurchaseCurrentState: Enum "S1P-Purchase States";

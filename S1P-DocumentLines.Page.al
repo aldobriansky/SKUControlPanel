@@ -58,7 +58,28 @@ page 50126 "S1P-Document Lines"
 
                 trigger OnAction();
                 begin
+                    Rec.GoToNextState();
+                end;
+            }
+            action("State Sequence")
+            {
+                Scope = Page;
+                Image = SwitchCompanies;
 
+                trigger OnAction()
+                begin
+                    Rec.ShowStateSequence();
+                end;
+            }
+            action("Create state sequence")
+            {
+                Visible = true; // change to false after debug
+
+                trigger OnAction()
+                var
+                    Runner: Codeunit "SM9-Runner";
+                begin
+                    Runner.CreateStateSequenceForPurchase();
                 end;
             }
         }

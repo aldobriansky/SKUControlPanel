@@ -165,8 +165,6 @@ page 50125 "S1P-SKU List"
     }
 
     procedure RefreshValues()
-    var
-        myInt: Integer;
     begin
         Rec.CalculateValues(Rec);
     end;

@@ -63,29 +63,6 @@ table 50122 "S1P-Whse. Document Line"
         }
     }
 
-    var
-        myInt: Integer;
-
-    trigger OnInsert()
-    begin
-
-    end;
-
-    trigger OnModify()
-    begin
-
-    end;
-
-    trigger OnDelete()
-    begin
-
-    end;
-
-    trigger OnRename()
-    begin
-
-    end;
-
     procedure GetWhseDocumentNo(): Code[20]
     var
         WarehouseReceiptLine: Record "Warehouse Receipt Line";
