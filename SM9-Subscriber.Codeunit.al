@@ -38,6 +38,9 @@ codeunit 50100 "SM9-Subscriber"
         PurchaseLine: Record "Purchase Line";
         PurchaseHeader: Record "Purchase Header";
         WarehouseRequest: Record "Warehouse Request";
+        Location: Record Location;
+        WarehouseActivityLine: Record "Warehouse Activity Line";
+        LibraryWarehouse: Codeunit "Library - Warehouse";
         WhseRequestExists: Boolean;
     begin
         if (StateSequence."Event Subscriber" <> 'CheckWarehouseForPurchaseOrder') or IsHandled then
@@ -54,8 +57,24 @@ codeunit 50100 "SM9-Subscriber"
 
         if (PurchaseHeader.Status = PurchaseHeader.Status::Released) and
             WhseRequestExists and not WarehouseRequest."Completely Handled"
-        then
+        then begin
+            if Location.RequireReceive(PurchaseLine."Location Code") then begin
+                if LibraryWarehouse.FindWhseReceiptNoBySourceDoc(
+                     Database::"Purchase Line", PurchaseLine."Document Type".AsInteger(), PurchaseLine."Document No.") = ''
+                then
+                    LibraryWarehouse.CreateWhseReceiptFromPO(PurchaseHeader);
+            end else
+                if Location.RequirePutaway(PurchaseLine."Location Code") then begin
+                    WarehouseActivityLine.SetRange("Activity Type", WarehouseActivityLine."Activity Type"::"Invt. Put-away");
+                    WarehouseActivityLine.SetRange("Source Type", Database::"Purchase Line");
+                    WarehouseActivityLine.SetRange("Source Subtype", PurchaseLine."Document Type".AsInteger());
+                    WarehouseActivityLine.SetRange("Source No.", PurchaseLine."Document No.");
+                    WarehouseActivityLine.SetRange("Source Line No.", PurchaseLine."Line No.");
+                    if WarehouseActivityLine.IsEmpty() then
+                        LibraryWarehouse.CreateInvtPutPickPurchaseOrder(PurchaseHeader);
+                end;
             exit;
+        end;
 
         Document."Current State" := StateSequence."Next State";
         RecordVariant := Document;

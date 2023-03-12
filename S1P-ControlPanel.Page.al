@@ -25,18 +25,15 @@ page 50120 "S1P-Control Panel"
             }
             part(SKUList; "S1P-SKU List")
             {
-                ShowFilter = false;
                 UpdatePropagation = Both;
             }
             part(Documents; "S1P-Document Lines")
             {
-                ShowFilter = false;
                 UpdatePropagation = Both;
                 Caption = 'Documents';
             }
             part(WhseDocuments; "S1P-Whse. Document Lines")
             {
-                ShowFilter = false;
                 UpdatePropagation = Both;
                 Caption = 'Warehouse';
             }
