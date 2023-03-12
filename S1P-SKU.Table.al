@@ -265,6 +265,12 @@ table 50120 "S1P-SKU"
                 WhseDocument.Insert();
             until WhseShipmentLine.Next() = 0;
 
+        WhseActivityLine.SetFilter(
+          "Activity Type", '%1|%2|%3|%4',
+          "Warehouse Activity Type"::"Invt. Put-away",
+          "Warehouse Activity Type"::"Invt. Pick",
+          "Warehouse Activity Type"::"Put-away",
+          "Warehouse Activity Type"::Pick);
         WhseActivityLine.SetRange("Item No.", Rec."Item No.");
         WhseActivityLine.SetRange("Variant Code", Rec."Variant Code");
         WhseActivityLine.SetRange("Location Code", Rec."Location Code");

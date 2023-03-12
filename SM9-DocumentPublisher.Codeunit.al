@@ -25,6 +25,12 @@ codeunit 50101 "SM9-Document Publisher"
             exit;
 
         StateSequence.SetRange("Current State");
+        StateSequence.SetFilter("Operation No.", '>=%1', StateSequence."Operation No.");
+        StateSequence.SetRange("Next State", Document."Next State");
+        if StateSequence.IsEmpty() then
+            exit;
+        StateSequence.SetRange("Next State");
+        StateSequence.FindSet();
         repeat
             xCurrentState := Document."Current State";
             RaiseEvents(Document, StateSequence);

@@ -73,19 +73,19 @@ table 50122 "S1P-Whse. Document Line"
             "Warehouse Document Type"::Receipt:
                 begin
                     WarehouseReceiptLine.SetLoadFields("No.");
-                    WarehouseReceiptLine.Get("Record ID");
-                    exit(WarehouseReceiptLine."No.");
+                    if WarehouseReceiptLine.Get("Record ID") then
+                        exit(WarehouseReceiptLine."No.");
                 end;
             "Warehouse Document Type"::Shipment:
                 begin
                     WarehouseShipmentLine.SetLoadFields("No.");
-                    WarehouseShipmentLine.Get("Record ID");
-                    exit(WarehouseShipmentLine."No.");
+                    if WarehouseShipmentLine.Get("Record ID") then
+                        exit(WarehouseShipmentLine."No.");
                 end;
             else begin
                 WarehouseActivityLine.SetLoadFields("No.");
-                WarehouseActivityLine.Get("Record ID");
-                exit(WarehouseActivityLine."No.");
+                if WarehouseActivityLine.Get("Record ID") then
+                    exit(WarehouseActivityLine."No.");
             end;
         end;
     end;
@@ -99,18 +99,21 @@ table 50122 "S1P-Whse. Document Line"
         case "Warehouse Document Type" of
             "Warehouse Document Type"::Receipt:
                 begin
-                    WarehouseReceiptLine.Get("Record ID");
+                    if not WarehouseReceiptLine.Get("Record ID") then
+                        exit;
                     WarehouseReceiptLine.SetRecFilter();
                     Page.Run(0, WarehouseReceiptLine);
                 end;
             "Warehouse Document Type"::Shipment:
                 begin
-                    WarehouseReceiptLine.Get("Record ID");
-                    WarehouseReceiptLine.SetRecFilter();
-                    Page.Run(0, WarehouseReceiptLine);
+                    if not WarehouseShipmentLine.Get("Record ID") then
+                        exit;
+                    WarehouseShipmentLine.SetRecFilter();
+                    Page.Run(0, WarehouseShipmentLine);
                 end;
             else begin
-                WarehouseActivityLine.Get("Record ID");
+                if not WarehouseActivityLine.Get("Record ID") then
+                    exit;
                 WarehouseActivityLine.SetRecFilter();
                 Page.Run(0, WarehouseActivityLine);
             end;

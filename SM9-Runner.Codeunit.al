@@ -13,7 +13,7 @@ codeunit 50111 "SM9-Runner"
 
         Document.Copy(Rec);
         if Publisher.Run(Document) then;
-        Document.Modify();
+        // Document.Modify();
         Commit();
         Rec.Copy(Document);
 
@@ -98,7 +98,7 @@ codeunit 50111 "SM9-Runner"
         StateSequence."Event Subscriber" := 'ShipSalesOrder';
         StateSequence.Insert();
 
-        StateSequence."Entry No." := 4;
+        StateSequence."Entry No." := 104;
         StateSequence."Document Type" := "Item Ledger Entry Type"::Sale.AsInteger();
         StateSequence."Document No." := '';
         StateSequence."Operation No." := 40;

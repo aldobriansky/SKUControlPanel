@@ -73,13 +73,14 @@ page 50126 "S1P-Document Lines"
             }
             action("Create state sequence")
             {
-                Visible = true; // change to false after debug
+                Visible = false; // change to false after debug
 
                 trigger OnAction()
                 var
                     Runner: Codeunit "SM9-Runner";
                 begin
                     Runner.CreateStateSequenceForPurchase();
+                    Runner.CreateStateSequenceForSales();
                 end;
             }
         }

@@ -50,7 +50,7 @@ codeunit 50100 "SM9-Subscriber"
 
         WarehouseRequest.SetSourceFilter(Database::"Purchase Line", PurchaseLine."Document Type".AsInteger(), PurchaseLine."Document No.");
         WarehouseRequest.SetRange("Location Code", PurchaseLine."Location Code");
-        WhseRequestExists := not WarehouseRequest.FindFirst();
+        WhseRequestExists := WarehouseRequest.FindFirst();
 
         if (PurchaseHeader.Status = PurchaseHeader.Status::Released) and
             WhseRequestExists and not WarehouseRequest."Completely Handled"
@@ -140,7 +140,10 @@ codeunit 50100 "SM9-Subscriber"
         Document: Record "S1P-Document Line";
         SalesLine: Record "Sales Line";
         SalesHeader: Record "Sales Header";
+        Location: Record Location;
         WarehouseRequest: Record "Warehouse Request";
+        WarehouseActivityLine: Record "Warehouse Activity Line";
+        LibraryWarehouse: Codeunit "Library - Warehouse";
         WhseRequestExists: Boolean;
     begin
         if (StateSequence."Event Subscriber" <> 'CheckWarehouseForSalesOrder') or IsHandled then
@@ -153,12 +156,28 @@ codeunit 50100 "SM9-Subscriber"
 
         WarehouseRequest.SetSourceFilter(Database::"Sales Line", SalesLine."Document Type".AsInteger(), SalesLine."Document No.");
         WarehouseRequest.SetRange("Location Code", SalesLine."Location Code");
-        WhseRequestExists := not WarehouseRequest.FindFirst();
+        WhseRequestExists := WarehouseRequest.FindFirst();
 
         if (SalesHeader.Status = SalesHeader.Status::Released) and
             WhseRequestExists and not WarehouseRequest."Completely Handled"
-        then
+        then begin
+            if Location.RequireShipment(SalesLine."Location Code") then begin
+                if LibraryWarehouse.FindWhseShipmentNoBySourceDoc(
+                     Database::"Sales Line", SalesLine."Document Type".AsInteger(), SalesLine."Document No.") = ''
+                then
+                    LibraryWarehouse.CreateWhseShipmentFromSO(SalesHeader);
+            end else
+                if Location.RequirePicking(SalesLine."Location Code") then begin
+                    WarehouseActivityLine.SetRange("Activity Type", WarehouseActivityLine."Activity Type"::"Invt. Pick");
+                    WarehouseActivityLine.SetRange("Source Type", Database::"Sales Line");
+                    WarehouseActivityLine.SetRange("Source Subtype", SalesLine."Document Type".AsInteger());
+                    WarehouseActivityLine.SetRange("Source No.", SalesLine."Document No.");
+                    WarehouseActivityLine.SetRange("Source Line No.", SalesLine."Line No.");
+                    if WarehouseActivityLine.IsEmpty() then
+                        LibraryWarehouse.CreateInvtPutPickSalesOrder(SalesHeader);
+                end;
             exit;
+        end;
 
         Document."Current State" := StateSequence."Next State";
         RecordVariant := Document;
